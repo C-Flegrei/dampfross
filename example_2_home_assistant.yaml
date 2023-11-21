@@ -1,0 +1,49 @@
+esphome:
+  name: etrv2wifi
+  comment: Extend Danfoss ECO eTRV BLE range over WiFi with ESPHome
+  platform: ESP32
+  board: esp32dev
+  libraries:
+    - xxtea-iot-crypt@2.0.1
+
+# Enable Home Assistant API
+api:
+  password: "generate-api-password"
+
+ota:
+  password: "generate-ota-password"
+
+wifi:
+  ssid: "my-ssid"
+  password: "my-password"
+
+  # Enable fallback hotspot (captive portal) in case wifi connection fails
+  ap:
+    ssid: "My Room eTRV Fallback Hotspot"
+    password: "my-fallback-ap-password"
+
+captive_portal:
+
+external_components:
+  - source: github://dmitry-cherkas/esphome-danfoss-eco@v1.1.4
+
+sensor:
+  - platform: wifi_signal
+    name: "etrv2wifi WiFi Signal Strength"
+    update_interval: 60s
+
+ble_client:
+  - mac_address: 00:04:2f:xx:xx:xx
+    id: room_eco2
+
+climate:
+  - platform: danfoss_eco
+    name: "My Room eTRV"
+    ble_client_id: room_eco2
+    pin_code: "0000"
+    secret_key: deadbeefcafebabedeadbeefcafebabe
+    battery_level:
+      name: "My Room eTRV Battery Level"
+    temperature:
+      name: "My Room eTRV Temperature"
+    update_interval: 30min
